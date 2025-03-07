@@ -13,6 +13,8 @@ struct SpotifyNewReleaseCell: View {
     var subheadline: String? = "Some Artist"
     var title: String? = "Some playlist"
     var subtitle: String? = "Single - title"
+    var onAddToPaylistPressed: (() -> Void)? = nil
+    var onPlayPressed: (() -> Void)? = nil
     var body: some View {
         VStack(spacing: 16) {
             HStack {
@@ -59,7 +61,7 @@ struct SpotifyNewReleaseCell: View {
                             .foregroundStyle(.spotifyWhite)
                             .font(.title3)
                             .onTapGesture {
-                                
+                                onAddToPaylistPressed?()
                             }
                             .frame(maxWidth: .infinity,alignment: .leading)
                         Image(systemName: "play.circle.fill")
@@ -75,6 +77,9 @@ struct SpotifyNewReleaseCell: View {
         }
         .themeColors(isSelected: false)
         .cornerRadius(8)
+        .onTapGesture {
+            onPlayPressed?()
+        }
     }
 }
 

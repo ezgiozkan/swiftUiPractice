@@ -19,6 +19,7 @@ struct Product: Codable, Identifiable {
     let stock: Int
     let tags: [String]
     let brand: String?
+    let category: String?
     let sku: String
     let weight: Int
     let thumbnail: String
