@@ -19,9 +19,19 @@ struct Product: Codable, Identifiable {
     let stock: Int
     let tags: [String]
     let brand: String?
+    let category: String?
     let sku: String
     let weight: Int
     let thumbnail: String
     let images: [String]
 
+    var firtImage: String {
+        images.first ?? Constants.randomImage
+    }
+}
+
+struct ProductRow: Identifiable {
+    let id = UUID().uuidString
+    let title: String
+    let products: [Product]
 }
