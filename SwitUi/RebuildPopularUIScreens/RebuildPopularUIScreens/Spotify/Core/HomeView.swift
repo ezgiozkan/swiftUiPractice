@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
     @State private var products: [Product] = []
+    @State private var productsRow: [ProductRow] = []
     
     var body: some View {
         ZStack {
@@ -24,24 +25,42 @@ struct HomeView: View {
                         Section {
                             VStack {
                                 recentsSection
+                                
                                 if let product = products.first {
                                     newReleaseSection(product: product)
                                 }
-                        }.padding(.horizontal, 16)
-                        
-                        
-                        ForEach(0..<20){ _ in
-                            Rectangle()
-                                .fill(Color.red)
-                                .frame(width: 200, height: 200)
+                                
+                                ForEach(productsRow) { row in
+                                    VStack(spacing: 8) {
+                                        Text(row.title)
+                                            .font(.title)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(.spotifyWhite)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        ScrollView(.horizontal) {
+                                            HStack(spacing: 16) {
+                                                ForEach(
+                                                    row.products
+                                                ) { product in
+                                                    ImageTitleRowCell(
+                                                        imageSize: 120,
+                                                        imageName: product.firtImage,
+                                                        title: product.title
+                                                    )
+                                                }
+                                            }
+                                        }.scrollIndicators(.hidden)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        } header: {
+                            header
                         }
-                    } header: {
-                        header
-                    }
-                }).padding(.top, 8)
+                    }).padding(.top, 16)
                 
             }.scrollIndicators(.hidden)
-             .clipped()
+                .clipped()
         }
         .task {
             await getData()
@@ -53,6 +72,13 @@ struct HomeView: View {
         do {
             currentUser = try await DatabaseHelper.getUsers().first
             products = try await Array(DatabaseHelper.getProducts().prefix(8))
+            var rows: [ProductRow] = []
+            let allBrands = Set(products.map({ $0.brand }))
+            for brand in allBrands {
+                let products = self.products.filter({ $0.brand == brand })
+                rows.append(ProductRow(title: brand?.capitalized ?? "", products: products))
+            }
+            productsRow = rows
         } catch {
             
         }
